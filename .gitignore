@@ -26,4 +26,4 @@ dist-ssr
 
 # firebase init file 
 
-firebase.js
+src/firebase.js
