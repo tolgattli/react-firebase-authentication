@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes } from "react-router-dom";
+import "./App.css";
+import { Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Auth from "./pages/Auth";
+import Navbar from "./components/Navbar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
+import { useState } from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [users, setUsers] = useState(null)
+
+  useEffect(()=>{
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const uid = user.uid;
+        setUsers(user)
+        // ...
+      } else {
+        // User is signed out
+        // ...
+      }
+    });
+  },[])
+
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Navbar users={users} />
+      <Routes>
+        <Route path="/" element={<Auth />} />,
+        <Route path="/dashboard" element={<Home users={users} />} />
+      </Routes>
+      <ToastContainer position="top-right" autoClose={5000} theme="dark" />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
